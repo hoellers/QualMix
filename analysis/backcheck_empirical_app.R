@@ -196,6 +196,8 @@ model_data <- list(N = nrow(Nu),
 bc_mod <- cmdstan_model("stan_models/MM_SQ_backchecking.stan")
 
 # sampling
+# Note: you may get warnings about pi_k_0 not being a valid simplex. These are
+#       safe to ignore if they disappear after the first few iterations.
 bc_fit <- bc_mod$sample(
   data = model_data,
   seed = 123,
@@ -257,7 +259,7 @@ pi_k <- rbind(pi_k_0, pi_k_1)
 pi_k$Distribution <- c(rep("Low-Quality", 3),
                        rep("High-Quality", 3))
 
-# Pi_K plots (Figure 4)
+# Pi_K plots (Figure 3)
 file_name <- paste0("figures/", "pi_ks",".pdf") 
 cairo_pdf(filename = file_name, width = 8, height = 7)
 ggplot(pi_k, aes(y = `50%`, x = Cat, color = Distribution)) +
@@ -286,6 +288,43 @@ c(quantile(calc_JSD(list(model = bc_stanfit)),
 #expected value (for Table 4)
 pi_k[1:3]*6
 
+### Calculating Enumerator Data Quality Estimates #####
+post_match_prob <- t(rstan::extract(bc_stanfit, pars = "responsibilities")$responsibilities) %>% 
+  as.data.frame()
+
+# looking at posterior probability of a match
+post_match_prob_summary <- as.data.frame(t(apply(post_match_prob,
+                                                 1, quantile, probs = c(0.025, .5, .975))))
+post_match_prob_summary <- cbind(post_match_prob_summary, Nu)
+
+post_match_prob$enum_id <- vendor_end_orig$enum_id
+post_match_prob_summary$enum_id <- vendor_end_orig$enum_id
+
+post_match_prob_summary$match <- as.numeric(post_match_prob_summary$`50%` > .5)
+
+# enumerator quality estimates
+avg_post_match_prob_pr_enum_full <- post_match_prob %>%
+  group_by(enum_id) %>%
+  summarise(across(everything(), mean))
+avg_post_match_prob_pr_enum <- avg_post_match_prob_pr_enum_full
+avg_post_match_prob_pr_enum <- data.frame(enum_id = avg_post_match_prob_pr_enum$enum_id,
+                                          t(apply(avg_post_match_prob_pr_enum[2:ncol(avg_post_match_prob_pr_enum)],
+                                                  1,
+                                                  quantile,
+                                                  probs = probs)),
+                                          sd = (apply(avg_post_match_prob_pr_enum[2:ncol(avg_post_match_prob_pr_enum)],
+                                                      1,
+                                                      sd
+                                          )),
+                                          mean = (apply(avg_post_match_prob_pr_enum[2:ncol(avg_post_match_prob_pr_enum)],
+                                                        1,
+                                                        mean
+                                          )))
+names(avg_post_match_prob_pr_enum)[2:4] <- c("Low", "Median", "High")
+avg_post_match_prob_pr_enum$num_bckchck <-
+  num_enum$num_in_bckchck[1:nrow(avg_post_match_prob_pr_enum)]
+
+
 ### Descriptive Information ####
 
 #number of obs per each category
@@ -310,42 +349,6 @@ apply(Nu[post_match_prob_summary$match == 0,], 2, mean)
 # percent of matches
 mean(post_match_prob_summary$match)
 
-### Calculating Enumerator Data Quality Estimates #####
-post_match_prob <- t(rstan::extract(bc_stanfit, pars = "responsibilities")$responsibilities) %>% 
-   as.data.frame()
-
-# looking at postior probability of a match
-post_match_prob_summary <- as.data.frame(t(apply(post_match_prob,
-                                 1, quantile, probs = c(0.025, .5, .975))))
-post_match_prob_summary <- cbind(post_match_prob_summary, Nu)
-
-post_match_prob$enum_id <- vendor_end_orig$enum_id
-post_match_prob_summary$enum_id <- vendor_end_orig$enum_id
-
-post_match_prob_summary$match <- as.numeric(post_match_prob_summary$`50%` > .5)
-
-# enumerator quality estimates
-avg_post_match_prob_pr_enum_full <- post_match_prob %>%
-  group_by(enum_id) %>%
-  summarise(across(everything(), mean))
-avg_post_match_prob_pr_enum <- avg_post_match_prob_pr_enum_full
-avg_post_match_prob_pr_enum <- data.frame(enum_id = avg_post_match_prob_pr_enum$enum_id,
-                                          t(apply(avg_post_match_prob_pr_enum[2:ncol(avg_post_match_prob_pr_enum)],
-                                                  1,
-                                                  quantile,
-                                                  probs = probs)),
-                                         sd = (apply(avg_post_match_prob_pr_enum[2:ncol(avg_post_match_prob_pr_enum)],
-                                                  1,
-                                                  sd
-                                                  )),
-                                         mean = (apply(avg_post_match_prob_pr_enum[2:ncol(avg_post_match_prob_pr_enum)],
-                                                       1,
-                                                       mean
-                                         )))
-names(avg_post_match_prob_pr_enum)[2:4] <- c("Low", "Median", "High")
-avg_post_match_prob_pr_enum$num_bckchck <-
-  num_enum$num_in_bckchck[1:nrow(avg_post_match_prob_pr_enum)]
-  
 ### Figure 4 - Enumerator Data Quality ####
 file_name <- paste0("figures/", "enum_qual_endline",".pdf") 
 cairo_pdf(filename = file_name, width = 8, height = 7)
@@ -470,10 +473,7 @@ bc_fit2 <- bc_mod$sample(
   refresh = 500
 )
 
-bc_fit2$summary()
-bc_fit2$cmdstan_diagnose()
 bc_stanfit2 <- rstan::read_stan_csv(bc_fit2$output_files())
-
 
 #assess similarity of pi_k distributions
 pi_k_1_2 <- as.data.frame(t(apply(rstan::extract(bc_stanfit2, pars = "pi_k_1")$pi_k_1,
@@ -555,8 +555,6 @@ surv_qual2 <- quantile(apply(post_match_prob2, 2, mean),
 file_name <- paste0("figures/", "pi_ks2",".pdf") 
 cairo_pdf(filename = file_name, width = 8, height = 7)
 ggplot(pi_k2, aes(y = `50%`, x = Cat, color = Distribution)) +
-  #geom_col(position = "dodge", width = 0.5) +
-  #geom_line(position = position_dodge(width = .5)) +
   geom_point(position = position_dodge(width = .5)) +
   geom_errorbar(aes(ymin = `2.5%`, ymax = `97.5%`),
                 width = .25,
@@ -567,7 +565,6 @@ ggplot(pi_k2, aes(y = `50%`, x = Cat, color = Distribution)) +
                      labels = c("Complete Disagreement", 
                                 "Similar",
                                 "Complete Agreement")) + 
-  #scale_fill_grey() +
   scale_color_grey()
 dev.off()
 
@@ -653,7 +650,7 @@ r7_qual_fit <- r7_qual_mod$sample(
 
 r7_qual_fit$summary()
 r7_qual_fit$cmdstan_diagnose()
-r7_qual_fit_stanfit <- rstan::read_stan_csv(r7_qual_fit$output_files())
+# r7_qual_fit_stanfit <- rstan::read_stan_csv(r7_qual_fit$output_files())
 
 # this model has too many divergent transitions; the issue is that it treats
 # the predictor as a latent variable, with enumerator quality distributions

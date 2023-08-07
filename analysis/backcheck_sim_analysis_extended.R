@@ -283,7 +283,7 @@ mc_params$iter_params <- apply(mc_params, 1, function(x){
 mc_params$iter_params <- factor(mc_params$iter_params, 
                                 levels = mc_params$iter_params)
 # create vector of file paths to simulation results stored in MC_Output folder
-files <- list.files(path = "MC_Output/",
+files <- list.files(path = "data/MC_Output/",
                     pattern = "results*")
 # reordered this list so that it is in numerical order by simulation number, 
 # not alphabetical order
@@ -292,7 +292,7 @@ ord <- data.frame(file = files, ord_num = as.numeric(ord))
 ord <- ord %>% arrange(ord_num)
 
 # process all files
-results_all <- lapply(paste0("MC_Output/" ,ord$file), process_results, probs = probs)
+results_all <- lapply(paste0("data/MC_Output/" ,ord$file), process_results, probs = probs)
 # this results in a list with 12 elements, where each element corresponds to one
 # simulation (set of parameters)
 
@@ -432,11 +432,11 @@ enum25 <- results_all$enum_qual_bias_r$mean[results_all$enum_qual_bias_r$name ==
 enum6 <- results_all$enum_qual_bias_r$mean[results_all$enum_qual_bias_r$name == "6"][7]
 
 # adding enumerator labels to plot
-g1 <- g1 + annotate(geom = "text", x = "%B=0.15; logit⁻¹ (β₀)=0.9",
+g1 <- g1 + annotate(geom = "text", x = "%R=0.15; logit⁻¹ (β₀)=0.9",
                     y = enum1 - 0.005, label = "1") +
-  annotate(geom = "text", x = "%B=0.15; logit⁻¹ (β₀)=0.9",
+  annotate(geom = "text", x = "%R=0.15; logit⁻¹ (β₀)=0.9",
            y = enum25 - 0.005, label = "25") +
-  annotate(geom = "text", x = "%B=0.15; logit⁻¹ (β₀)=0.9",
+  annotate(geom = "text", x = "%R=0.15; logit⁻¹ (β₀)=0.9",
            y = enum6 + 0.005, label = "6")
 ggsave(paste0("figures/", gsub(" ", "", "Enumerator Quality Bias - Using Mean Post. Prob. of High Quality"),
               ".png"),

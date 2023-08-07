@@ -15,6 +15,7 @@
 #library(philentropy)
 #library(gtools)
 #library(stringdist)
+#library(rstan)
 # the functions below usually try to load these packages and will return an error 
 # if they are not found
 
@@ -911,3 +912,89 @@ calc_JSD <- function(result){
   sqrt(JSDiv)
 }
 
+# functions to get summary of pi_k_* probabilities
+get_pi_k_probs_summary <- function(fit, pi_k, probs){
+  out <- as.data.frame(t(apply(rstan::extract(fit, 
+                                       pars = pi_k)[[pi_k]],
+                        2,
+                        quantile, probs = probs)))
+  if(nrow(out) == 2){
+    out$Cat <- c(0, 2)
+  } else {
+    out$Cat <- 0:2
+  }
+  out
+}
+
+## convenience function that uses get_pi_k_probs_sum to get pi_k_1
+get_pi_k_1_probs_summary <- function(fit, probs){
+  out <- get_pi_k_probs_sum(fit, "pi_k_1", probs)
+  out$Distribution <- "High Quality"
+  out
+}
+
+
+## convenience function that uses get_pi_k_probs_sum to get pi_k_0
+get_pi_k_0_probs_summary <- function(fit, probs){
+  out <- get_pi_k_probs_sum(fit, "pi_k_0", probs)
+  out$Distribution <- "Low Quality"
+  out
+}
+
+# convenience function to extract summary of JSD distance
+get_JSD_summary <- function(fit, probs){
+  c(quantile(calc_JSD(list(model = fit)),
+             probs = c(0.025, 0.5, 0.975)), 
+    mean = mean(calc_JSD(list(model = fit))))
+}
+
+# convenience function to extract all samples from distribution of posterior
+# probability that an observation is high quality
+get_post_prob_HQ <- function(fit){
+  as.data.frame(t(rstan::extract(bc_stanfit, 
+                                 pars = "responsibilities")$responsibilities))
+}
+
+# convenience function for summarizing posterior distribution
+get_post_prob_HQ_summary <- function(post_prob_HQ){
+  as.data.frame(t(apply(post_prob_HQ,
+                        1, quantile, probs = c(0.025, .5, .975))))
+}
+
+# convenience function to extract all samples from posterior of the 
+# enumerator quality distribution
+# need to supply enumerator ID from data
+get_post_enum_qual <- function(post_prob_HQ, enum_ids){
+  post_prob_HQ$enum_id <- enum_ids
+  post_prob_HQ %>%
+    group_by(enum_id) %>%
+    summarise(across(everything(), mean))
+}
+
+# summarize enumerator quality estimates
+get_post_enum_qual_summary <- function(post_enum_qual, probs){
+  
+  only_equal <- post_enum_qual[2:ncol(post_enum_qual)]
+  
+  post_enum_qual_summary <- data.frame(enum_id = post_enum_qual$enum_id,
+                                       t(apply(only_equal,
+                                              1,
+                                              quantile,
+                                              probs = probs)),
+                                      sd = (apply(only_equal,
+                                                  1,
+                                                  sd
+                                      )),
+                                      mean = (apply(only_equal,
+                                                    1,
+                                                    mean
+                                      )))
+  names(post_enum_qual_summary)[2:4] <- c("Low", "Median", "High")
+  post_enum_qual_summary  
+}
+
+# function to get summary of overall survey quality
+get_surv_qual_summary <- function(post_prob_HQ, probs){
+  quantile(apply(post_prob_HQ, 2, mean), 
+           probs = probs)
+}
