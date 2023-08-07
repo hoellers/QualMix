@@ -928,7 +928,7 @@ get_pi_k_probs_summary <- function(fit, pi_k, probs){
 
 ## convenience function that uses get_pi_k_probs_sum to get pi_k_1
 get_pi_k_1_probs_summary <- function(fit, probs){
-  out <- get_pi_k_probs_sum(fit, "pi_k_1", probs)
+  out <- get_pi_k_probs_summary(fit, "pi_k_1", probs)
   out$Distribution <- "High Quality"
   out
 }
@@ -936,7 +936,7 @@ get_pi_k_1_probs_summary <- function(fit, probs){
 
 ## convenience function that uses get_pi_k_probs_sum to get pi_k_0
 get_pi_k_0_probs_summary <- function(fit, probs){
-  out <- get_pi_k_probs_sum(fit, "pi_k_0", probs)
+  out <- get_pi_k_probs_summary(fit, "pi_k_0", probs)
   out$Distribution <- "Low Quality"
   out
 }
