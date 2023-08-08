@@ -646,6 +646,8 @@ files in alphabetical order:
     model used in paper
   - `receipts_qual_model_simple.stan`: underlying Stan code for receipt
     model used in paper
+- `.gitignore`: `gitignore` file for repository
+- `LICENSE.md`: GPL 3.0 license
 - `QualMix.rproj`: R project file associated with repo
 - `README.md`: this repo description and help guide
 - `README.qmd`: file that creates this repo description and help guide.
