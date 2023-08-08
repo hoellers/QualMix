@@ -5,16 +5,17 @@ Mixture Model Approach to Assessing Measurement Error in Surveys Using
 Reinterviews,” accepted for publication in the *Journal of Survey
 Statistics and Methodology* (*JSSAM*).
 
-See [Applying QualMix to Your Own Work](#sec-example) for a brief
-demonstration of applying the method proposed in the analysis to your
-own data. If you do use this approach, I only request that you please
-cite the paper. You are welcome to adapt the code I wrote for thisp
-roject, but please note the GPL3 license. I am working on a R package
-that will implement this method more efficiently.
+See [Applying QualMix to Your Own
+Work](#applying-qualmix-to-your-own-work) for a brief demonstration of
+applying the method proposed in the paper to your own data. If you do
+use this approach, I only request that you please cite the paper. You
+are welcome to adapt the code I wrote for this project, but please note
+the GPL3 license. I am working on a R package that will implement this
+method more efficiently.
 
 If you encounter any issues or have any questions, please do not
 hesitate to let me know! Please see [File
-Descriptions](#sec-file-descriptions) below for a description of all the
+Descriptions](#file-descriptions) below for a description of all the
 files contained in this repository.
 
 # Required Packages
@@ -235,46 +236,6 @@ variables in both data sets are the same type (numeric, character,
 factor, etc), and that factors that have an ordering are explicitly
 turned into ordered factors, as ordered factors are treated differently
 from unordered factors.
-
-     [1] "resp_id"          "enum"             "market"           "district"        
-     [5] "duration"         "consent"          "d8"               "d9"              
-     [9] "d12"              "d12_other"        "e3"               "e7_b"            
-    [13] "e7_b_other"       "tc2"              "ms10"             "complete"        
-    [17] "submissiondate"   "starttime"        "endtime"          "recent_receipt_7"
-    [21] "receipt_shown"    "enum_id"         
-
-    # A tibble: 158 × 6
-          d8 d12        e3              e7_b                             tc2   ms10 
-       <dbl> <fct>      <fct>           <fct>                            <fct> <fct>
-     1    32 Standard 8 Every Day       Retail - Hardware                Rece… Some…
-     2    42 Standard 8 4-6 days a week Retail - Hardware                Rece… Some…
-     3    64 JCE/Form 2 4-6 days a week Other                            Rece… Some…
-     4    45 Standard 8 4-6 days a week Retail - Agricultural produce (… Rece… Very…
-     5    35 Form 1     4-6 days a week Retail - Hardware                No R… Some…
-     6    35 Standard 5 Every Day       Retail - Groceries               Rece… Some…
-     7    37 Standard 8 4-6 days a week Retail - Animal produce(meat,fi… No R… Some…
-     8    28 Form 3     1-3 days a week Retail - Stationery/Printing     No R… Some…
-     9    70 Standard 8 1-3 days a week Retail - Bags/Plastic Bags/Sacks Rece… Very…
-    10    23 Standard 8 1-3 days a week Retail - Clothes/shoes           Rece… Some…
-    # ℹ 148 more rows
-
-    # A tibble: 158 × 6
-          d8 d12             e3                   e7_b             tc2      ms10    
-       <dbl> <dbl+lbl>       <dbl+lbl>            <dbl+lbl>        <dbl+lb> <dbl+lb>
-     1    32  8 [Standard 8]  1 [Every Day]        6 [Retail - Ha…  1 [Yes]  2 [Som…
-     2    42  8 [Standard 8]  3 [4-6 days a week]  6 [Retail - Ha…  1 [Yes]  2 [Som…
-     3    64 10 [JCE/Form 2]  3 [4-6 days a week] 15 [Retail - Sa…  1 [Yes]  3 [Som…
-     4    45  8 [Standard 8]  3 [4-6 days a week] 45 [Retail - Ba…  0 [No]   2 [Som…
-     5    35  9 [Form 1]      1 [Every Day]        6 [Retail - Ha…  1 [Yes]  1 [Ver…
-     6    35  5 [Standard 5]  3 [4-6 days a week]  1 [Retail - Gr…  1 [Yes]  2 [Som…
-     7    37  9 [Form 1]      3 [4-6 days a week]  4 [Retail - An…  0 [No]   2 [Som…
-     8    28 11 [Form 3]      1 [Every Day]        1 [Retail - Gr…  0 [No]   2 [Som…
-     9    NA NA              NA                   NA               NA       NA      
-    10    24  5 [Standard 5]  1 [Every Day]        8 [Retail - Cl…  1 [Yes]  2 [Som…
-    # ℹ 148 more rows
-
-       d8   d12    e3  e7_b   tc2  ms10 
-     TRUE  TRUE  TRUE  TRUE FALSE  TRUE 
 
 ## Creating Agreement-Summary Vectors
 

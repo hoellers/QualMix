@@ -14,14 +14,15 @@ Model Approach to Assessing Measurement Error in Surveys Using Reinterviews,"
 accepted for publication in the *Journal of Survey Statistics and Methodology* 
 (*JSSAM*). 
 
-See [Applying QualMix to Your Own Work](#sec-example) for a brief demonstration
-of applying the method proposed in the analysis to your own data. If you do use
+See [Applying QualMix to Your Own Work](#applying-qualmix-to-your-own-work) 
+for a brief demonstration
+of applying the method proposed in the paper to your own data. If you do use
 this approach, I only request that you please cite the paper. You are welcome 
-to adapt the code I wrote for thisp roject, but please note the GPL3 license. I
+to adapt the code I wrote for this project, but please note the GPL3 license. I
 am working on a R package that will implement this method more efficiently. 
 
 If you encounter any issues or have any questions, please do not hesitate to let
-me know! Please see [File Descriptions](#sec-file-descriptions) below for a 
+me know! Please see [File Descriptions](#file-descriptions) below for a 
 description of all the files contained in this repository.
 
 # Required Packages
@@ -57,7 +58,7 @@ R and package versions used for analysis in paper:
 
 # Replication
 
-:::{.callout-note}
+:::{.callout-important}
 
 ## Backchecking = Reinterviewing
 
@@ -183,7 +184,7 @@ a bit more troubleshooting.
     first will create a a `figures/` folder that holds the figures found in the
     paper and supplementary materials. 
 
-# Applying QualMix to Your Own Work {#sec-example}
+# Applying QualMix to Your Own Work
 
 With the files in this repository, it is straightforward to apply the model to
 your own reinterviewing/backchecking data. 
@@ -236,6 +237,7 @@ factors are treated differently from unordered factors.
 
 ```{r lm-data-wrangling}
 #| echo: false
+#| include: false
 # add original enumerator information to backcheck data
 enum_info <- vendor_end[, c("resp_id", "enum")]
 vendor_end_long_bc <- inner_join(vendor_end_long_bc,
@@ -629,7 +631,7 @@ panel data, with the goal of estimating the probability that individuals
 interviewed over waves are actually the same. However, there is currently no
 example of this ready. 
 
-# File Descriptions {#sec-file-descriptions}
+# File Descriptions
 
 This file breakdown follows the repo structure and list folders and files in 
 alphabetical order:
