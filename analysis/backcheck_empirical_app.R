@@ -232,13 +232,12 @@ num_enum$percent_backcheck <- num_enum$num_in_bckchck/num_enum$num_pr_enum
 num_enum$percent_backcheck
 mean(num_enum$percent_backcheck, na.rm = T)
 
-file_name <- paste0("figures/", "reinterviewed_percents",".pdf") 
-cairo_pdf(filename = file_name, width = 8, height = 7)
+file_name <- paste0("figures/", "reinterviewed_percents",".png") 
 ggplot(num_enum, aes(x = percent_backcheck)) + 
   geom_histogram() + xlim(c(0, .1)) +
   labs(y = "Count", x = "Percent of Resp. Reinterviewed") +
   theme_bw()
-dev.off()
+ggsave(file_name, width = 8, height = 7, units = "in")
 
 ## Section 4.2.1 ####
 
@@ -260,8 +259,7 @@ pi_k$Distribution <- c(rep("Low-Quality", 3),
                        rep("High-Quality", 3))
 
 # Pi_K plots (Figure 3)
-file_name <- paste0("figures/", "pi_ks",".pdf") 
-cairo_pdf(filename = file_name, width = 8, height = 7)
+file_name <- paste0("figures/", "pi_ks",".png") 
 ggplot(pi_k, aes(y = `50%`, x = Cat, color = Distribution)) +
   geom_point(position = position_dodge(width = .5)) +
   geom_errorbar(aes(ymin = `2.5%`, ymax = `97.5%`),
@@ -274,7 +272,7 @@ ggplot(pi_k, aes(y = `50%`, x = Cat, color = Distribution)) +
                                 "Similar",
                                 "Complete Agreement")) + 
   scale_color_grey()
-dev.off()
+ggsave(file_name, width = 8, height = 7, unit = "in")
 
 ### Jensen Shannon Distance ####
 
@@ -350,8 +348,7 @@ apply(Nu[post_match_prob_summary$match == 0,], 2, mean)
 mean(post_match_prob_summary$match)
 
 ### Figure 4 - Enumerator Data Quality ####
-file_name <- paste0("figures/", "enum_qual_endline",".pdf") 
-cairo_pdf(filename = file_name, width = 8, height = 7)
+file_name <- paste0("figures/", "enum_qual_endline",".png")
 ggplot(avg_post_match_prob_pr_enum, 
        aes(y = Median, x = enum_id)) +
   geom_point() +
@@ -359,7 +356,7 @@ ggplot(avg_post_match_prob_pr_enum,
   labs(x = "Enumerator", y = "Average Posterior Probability\nof Belonging to High-Quality Distribution") +
   theme_bw() +
   ylim(c(0,1))
-dev.off()
+ggsave(file_name, width = 8, height = 7, unit = "in")
 
 ### Survey Data Quality Estimate ####
 surv_qual <- quantile(apply(post_match_prob, 2, mean), 
@@ -552,8 +549,7 @@ surv_qual2 <- quantile(apply(post_match_prob2, 2, mean),
                        probs = c(0.025, 0.5, 0.975))
 
 ### Figure H1 - Pi_K plots ####
-file_name <- paste0("figures/", "pi_ks2",".pdf") 
-cairo_pdf(filename = file_name, width = 8, height = 7)
+file_name <- paste0("figures/", "pi_ks2",".png") 
 ggplot(pi_k2, aes(y = `50%`, x = Cat, color = Distribution)) +
   geom_point(position = position_dodge(width = .5)) +
   geom_errorbar(aes(ymin = `2.5%`, ymax = `97.5%`),
@@ -566,20 +562,18 @@ ggplot(pi_k2, aes(y = `50%`, x = Cat, color = Distribution)) +
                                 "Similar",
                                 "Complete Agreement")) + 
   scale_color_grey()
-dev.off()
+ggsave(filename = file_name, width = 8, height = 7, unit = "in")
 
 ### Figure H2 - Histogram of Posterior Probability of High Quality ####
-file_name <- paste0("figures/", "poster_match_prob2",".pdf") 
-cairo_pdf(filename = file_name, width = 8, height = 7)
+file_name <- paste0("figures/", "poster_match_prob2",".png") 
 ggplot(post_match_prob_summary2, aes(x = `50%`)) + 
   geom_histogram() +
   labs(y = "Count", x = "Median of Posterior Probability of High Quality") +
   theme_bw()
-dev.off()
+ggsave(filename = file_name, width = 8, height = 7, unit = "in")
 
 ### Figure H3 - Enumerator Data Quality  ####
-file_name <- paste0("figures/", "enum_qual_endline2",".pdf") 
-cairo_pdf(filename = file_name, width = 8, height = 7)
+file_name <- paste0("figures/", "enum_qual_endline2",".png")
 ggplot(avg_post_match_prob_pr_enum2, 
        aes(y = Median, x = enum_id)) +
   geom_point() +
@@ -587,7 +581,7 @@ ggplot(avg_post_match_prob_pr_enum2,
   labs(x = "Enumerator", y = "Average Posterior Probability\nof Belonging to High-Quality Distribution") +
   theme_bw() +
   ylim(c(0,1))
-dev.off()
+ggsave(filename = file_name, width = 8, height = 7, unit = "in")
 
 ## Appendix J - Validation Exercise - Receipts And Enumerator Quality ####
 
@@ -735,7 +729,7 @@ r7_qual_plot <- ggplot(data = r7_qual_plot_data) +
   geom_errorbarh(aes(xmax = High, xmin = Low, y = diff), height = .25) +
   theme_bw() + labs(x = "Change in Posterior Predicted Probability",
                     y = "")
-ggsave("figures/r7_qual.pdf", r7_qual_plot, width = 8, height = 7,
+ggsave("figures/r7_qual.png", r7_qual_plot, width = 8, height = 7,
        units = "in")
 
 #### Figure I2 - Probability Curve ####
@@ -767,7 +761,7 @@ r7_qual_curve <- ggplot(data = r7_qual_curve_data) +
   ylim(c(0, 0.5)) +
   scale_x_continuous(breaks = seq(0.5, 1, by = .1), limits =  c(0.44, 1.01)) +
   geom_rug(aes(x = Median), data = avg_post_match_prob_pr_enum, color = "#D55E00")
-ggsave("figures/r7_qual_curve.pdf",
+ggsave("figures/r7_qual_curve.png",
        r7_qual_curve, width = 8, height = 7,
        units = "in")
 

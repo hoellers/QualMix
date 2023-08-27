@@ -174,8 +174,6 @@ plot_multirows <- function(df, title, ylim = NULL, invisible = T,
   
   file_name <- paste0(folder, gsub(" ", "", title),".png") 
   
-  #if(save) cairo_pdf(filename = file_name, width = 8, height = 7)
-  
   fig <- ggplot(df, aes(y = mean, x = iter_params, color = name)) +
     geom_point() +
     geom_line(aes(group = name)) +
